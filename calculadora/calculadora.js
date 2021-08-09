@@ -22,7 +22,7 @@ function criaBotaoNumero(val) {
     var button = document.createElement("input");
     button.setAttribute("value", val);
     button.setAttribute("type", "button");
-    button.setAttribute("class", "col");
+    button.setAttribute("class", "col p-3");
     button.setAttribute("onclick", `input('${val}')`);
 
     return button;
@@ -32,21 +32,21 @@ var btnDel = document.createElement("input");
 btnDel.setAttribute("id", "del");
 btnDel.setAttribute("value", "DEL");
 btnDel.setAttribute("type", "button");
-btnDel.setAttribute("class", "col");
+btnDel.setAttribute("class", "col p-3");
 btnDel.setAttribute("onclick", "del()");
 
 var btnReset = document.createElement("input");
 btnReset.setAttribute("id", "reset");
 btnReset.setAttribute("value", "RESET");
 btnReset.setAttribute("type", "button");
-btnReset.setAttribute("class", "col");
+btnReset.setAttribute("class", "col p-3");
 btnReset.setAttribute("onclick", "reset()");
 
 var btnEquals = document.createElement("input");
 btnEquals.setAttribute("id", "equals");
 btnEquals.setAttribute("value", "=");
 btnEquals.setAttribute("type", "button");
-btnEquals.setAttribute("class", "col");
+btnEquals.setAttribute("class", "col p-3");
 btnEquals.setAttribute("onclick", "calc()");
 
 
@@ -57,7 +57,7 @@ btnEquals.setAttribute("onclick", "calc()");
     var visor = document.createElement("input");
     visor.setAttribute("id", "result");
     visor.setAttribute("type", "text");
-    visor.setAttribute("class", "col-12");
+    visor.setAttribute("class", "col p-3");
     visor.setAttribute("disabled", "");
     visor.setAttribute("placeholder", "0");
 }
