@@ -5646,6 +5646,7 @@ function createInputElement(inputId, inputLabelText, inputType) {
     input.setAttribute("class", "form-control");
     input.setAttribute("placeholder", inputLabelText);
     input.setAttribute("type", inputType);
+    input.setAttribute("required", "");
 
     div.appendChild(label);
     div.appendChild(input);
@@ -5654,21 +5655,27 @@ function createInputElement(inputId, inputLabelText, inputType) {
 }
 
 function createComboBoxElement(inputId, inputLabelText, options) {
+    
+    // Cria a Div para do form group do select
     var div = document.createElement("div");
     div.setAttribute("class", "form-group");
 
+    // Cria o label do select (Descrição)
     var label = document.createElement("label");
     label.setAttribute("for", inputId);
     label.appendChild(document.createTextNode(inputLabelText));
 
+    // Cria o input tipo Select
     var input = document.createElement("select");
     input.setAttribute("id", inputId);
     input.setAttribute("name", inputId);
     input.setAttribute("class", "form-control");
     input.setAttribute("placeholder", inputLabelText);
 
+    // Se houver informações para serem colocadas como opções do select, então...
     if (options != null) {
-        
+
+        // Para cada opção no array, criamos uma <option> com o value do ID do valor e a descrição do mesmo. Por fim, inserimos esta <option> no input tipo select
         options.forEach(opt => {
             var option = document.createElement("option");
             option.setAttribute("value", opt.id);
@@ -5677,27 +5684,77 @@ function createComboBoxElement(inputId, inputLabelText, options) {
             input.appendChild(option);
         });
     } else {
+        // Se não houver informações a serem apresentadas no select, então desabilitamos o campo (para que não possa ser aberto)
         input.setAttribute("disabled", "");
     }
 
+    // Por fim, adicionamos a label e o input select na div
     div.appendChild(label);
     div.appendChild(input);
 
+    // Retornamos a div com a label e o select dentro dela.
     return div;
+}
+
+function createRadioElement(inputId, inputLabelText, inputValue){
+    var rDiv = document.createElement('div');
+    rDiv.setAttribute('class','mt-1 mb-3 form-check form-check-inline');
+
+    var rInput = document.createElement('input');
+    rInput.setAttribute('type','radio');
+    rInput.setAttribute('id',inputLabelText);
+    rInput.setAttribute('class','form-check-input');
+    rInput.setAttribute('name',inputId);
+    rInput.setAttribute('value',inputValue);
+
+    var rLabel = document.createElement('label');
+    rLabel.setAttribute('for',inputLabelText);
+    rLabel.setAttribute('class','form-check-label');
+    rLabel.appendChild(document.createTextNode(inputLabelText));
+
+    rDiv.appendChild(rInput);
+    rDiv.appendChild(rLabel);
+
+    return rDiv;
 }
 
 
 
 let container = document.getElementById("container");
 
-container.appendChild(createInputElement("nome", "Nome", "text"));
-container.appendChild(createInputElement("rua", "Rua", "text"));
-container.appendChild(createInputElement("numero", "Número", "number"));
-container.appendChild(createComboBoxElement("regiao", "Região", rscConsts.regions));
-container.appendChild(createComboBoxElement("estado", "Estado", null));
-container.appendChild(createComboBoxElement("cidade", "Cidade", null));
-container.appendChild(createInputElement("cep", "CEP", "text"));
-container.appendChild(createInputElement("dataNascimento", "Data de Nascimento", "datetime"));
+var form = document.createElement("form");
+
+form.appendChild(createInputElement("nome", "Nome", "text"));
+form.appendChild(createInputElement("rua", "Rua", "text"));
+form.appendChild(createInputElement("numero", "Número", "number"));
+form.appendChild(createComboBoxElement("regiao", "Região", rscConsts.regions));
+form.appendChild(createComboBoxElement("estado", "Estado", null));
+form.appendChild(createComboBoxElement("cidade", "Cidade", null));
+form.appendChild(createInputElement("cep", "CEP", "text"));
+
+var labelTextNacionalidade = document.createElement("label");
+labelTextNacionalidade.setAttribute("class", "mt-3");
+labelTextNacionalidade.appendChild(document.createTextNode("Nacionalidade: "));
+form.appendChild(labelTextNacionalidade);
+var lbreak = document.createElement("br");
+form.appendChild(lbreak);
+
+form.appendChild(createRadioElement("nacionalidade", "Brasileiro", "0"));
+form.appendChild(createRadioElement("nacionalidade", "Estrangeiro", "1"));
+form.appendChild(createInputElement("dataNascimento", "Data de Nascimento", "date"));
+
+var btnSubmit = document.createElement("button");
+btnSubmit.setAttribute("class", "btn btn-success");
+btnSubmit.setAttribute("type", "submit");
+btnSubmit.setAttribute("onClick", "registraDados()");
+btnSubmit.appendChild(document.createTextNode("Cadastrar"))
+
+form.appendChild(document.createElement("br"));
+form.appendChild(btnSubmit);
+
+
+container.appendChild(form);
+
 
 var regiaoInput = document.getElementById("regiao");
 regiaoInput.addEventListener("change", () => {
@@ -5745,3 +5802,170 @@ estadoInput.addEventListener("change", () => {
     });
 })
 
+function registraDados() {
+    var nome = document.getElementById("nome");
+    if (nome.value == null) return;
+
+    var rua = document.getElementById("rua");
+    if (rua.value == null) return;
+
+    var numero = document.getElementById("numero");
+    if (numero.value == null) return;
+
+    var regiaoInput = document.getElementById("regiao");
+    if (regiaoInput.value == null) return;
+
+    var estadoInput = document.getElementById("estado");
+    if (estadoInput.value == null) return;
+
+    var cidadeInput = document.getElementById("cidade");
+    if (cidadeInput.value == null) return;
+
+    var cep = document.getElementById("cep");
+    if (cep.value == null) return;
+
+    var nacionalidade = document.getElementById("nacionalidade");
+    if (nacionalidade.value == null) return;
+
+    var dataNascimento = document.getElementById("dataNascimento");
+    if (dataNascimento.value == null) return;
+
+    var registro = {
+        nome: nome.value,
+        rua: rua.value,
+        numero: numero.value,
+        regiao: regiaoInput.value,
+        estado: estadoInput.value,
+        cidade: cidadeInput.value,
+        cep: cep.value,
+        nacionalidade: nacionalidade.value,
+        nasc: dataNascimento.value
+    }
+
+    var registrosGuardados = JSON.parse(localStorage.getItem("registros"));
+
+    if (registrosGuardados != null) {
+        registrosGuardados.push(registro);
+        localStorage.setItem("registros", JSON.stringify(registrosGuardados));
+    } else {
+        localStorage.setItem("registros", JSON.stringify(new Array(registro)));
+    }
+}
+
+//Criação da tabela de registros
+{
+    var tabela = document.createElement("table");
+    tabela.setAttribute("class", "table table-dark table-striped");
+
+    var thead = document.createElement("thead");
+    var headCol = document.createElement("tr");
+
+    var col1 = document.createElement("th");
+    col1.setAttribute("scope", "col");
+    col1.appendChild(document.createTextNode("Nome"));
+    
+    var col2 = document.createElement("th");
+    col2.setAttribute("scope", "col");
+    col2.appendChild(document.createTextNode("Rua"));
+    
+    var col3 = document.createElement("th");
+    col3.setAttribute("scope", "col");
+    col3.appendChild(document.createTextNode("Número"));
+    
+    var col4 = document.createElement("th");
+    col4.setAttribute("scope", "col");
+    col4.appendChild(document.createTextNode("Região"));
+    
+    var col5 = document.createElement("th");
+    col5.setAttribute("scope", "col");
+    col5.appendChild(document.createTextNode("Estado"));
+    
+    var col6 = document.createElement("th");
+    col6.setAttribute("scope", "col");
+    col6.appendChild(document.createTextNode("Cidade"));
+    
+    var col7 = document.createElement("th");
+    col7.setAttribute("scope", "col");
+    col7.appendChild(document.createTextNode("CEP"));
+    
+    var col8 = document.createElement("th");
+    col8.setAttribute("scope", "col");
+    col8.appendChild(document.createTextNode("Nacionalidade"));
+    
+    var col9 = document.createElement("th");
+    col9.setAttribute("scope", "col");
+    col9.appendChild(document.createTextNode("Data de Nascimento"));
+
+    headCol.appendChild(col1);
+    headCol.appendChild(col2);
+    headCol.appendChild(col3);
+    headCol.appendChild(col4);
+    headCol.appendChild(col5);
+    headCol.appendChild(col6);
+    headCol.appendChild(col7);
+    headCol.appendChild(col8);
+    headCol.appendChild(col9);
+
+    thead.appendChild(headCol);
+    tabela.appendChild(thead);
+
+    
+    var tbody = document.createElement("tbody");
+
+    var registrosGuardados = JSON.parse(localStorage.getItem("registros"));
+    if (registrosGuardados != null) {
+        registrosGuardados.forEach(element => {
+            var trow = document.createElement("tr");
+
+            var tdata1 = document.createElement("td");
+            tdata1.appendChild(document.createTextNode(element.nome));
+            
+            var tdata2 = document.createElement("td");
+            tdata2.appendChild(document.createTextNode(element.rua));
+            
+            var tdata3 = document.createElement("td");
+            tdata3.appendChild(document.createTextNode(element.numero));
+            
+            var tdata4 = document.createElement("td");
+            tdata4.appendChild(document.createTextNode(element.regiao));
+            
+            var tdata5 = document.createElement("td");
+            tdata5.appendChild(document.createTextNode(element.estado));
+            
+            var tdata6 = document.createElement("td");
+            tdata6.appendChild(document.createTextNode(element.cidade));
+            
+            var tdata7 = document.createElement("td");
+            tdata7.appendChild(document.createTextNode(element.cep));
+            
+            var tdata8 = document.createElement("td");
+            tdata8.appendChild(document.createTextNode((element.nacionalidade == 0) ? "Brasileiro" : "Estrangeiro"));
+            
+            var tdata9 = document.createElement("td");
+            tdata9.appendChild(document.createTextNode(element.nasc));
+
+            trow.appendChild(tdata1);
+            trow.appendChild(tdata2);
+            trow.appendChild(tdata3);
+            trow.appendChild(tdata4);
+            trow.appendChild(tdata5);
+            trow.appendChild(tdata6);
+            trow.appendChild(tdata7);
+            trow.appendChild(tdata8);
+            trow.appendChild(tdata9);
+
+            tbody.appendChild(trow);
+
+        })
+    }
+
+    tabela.appendChild(tbody);
+    
+    var tableTitle = document.createElement("h1");
+    tableTitle.setAttribute("class", "text-center");
+    tableTitle.appendChild(document.createTextNode("Registros Cadastrados: "));
+
+    container.appendChild(tableTitle);
+    container.appendChild(tabela);
+
+}
